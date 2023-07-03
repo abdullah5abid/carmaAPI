@@ -1,0 +1,72 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  MyLambdaExecutionRole:
+      Type: AWS::IAM::Role
+      Properties:
+        RoleName: MyLambdaExecutionRole
+        AssumeRolePolicyDocument:
+          Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: sts:AssumeRole
+        ManagedPolicyArns:
+          - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+  MyNestAppFunction:
+    Type: AWS::Lambda::Function
+    Properties:
+      FunctionName: MyNestApp
+      Code:
+        ImageUri: ${AWS::AccountId}.dkr.ecr.us-east-1.amazonaws.com/carmatech-api-repo:latest
+      PackageType: Image
+      Timeout: 30
+      Role: !GetAtt MyLambdaExecutionRole.Arn
+
+  MyApiGateway:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: MyNestAppAPI
+
+  MyApiGatewayResource:
+      Type: AWS::ApiGateway::Resource
+      Properties:
+        RestApiId: !Ref MyApiGateway
+        ParentId: !GetAtt MyApiGateway.RootResourceId
+        PathPart: "{proxy+}"
+
+  MyApiGatewayMethod:
+      Type: AWS::ApiGateway::Method
+      Properties:
+        RestApiId: !Ref MyApiGateway
+        ResourceId: !Ref MyApiGatewayResource
+        HttpMethod: ANY
+        AuthorizationType: NONE
+        Integration:
+          Type: AWS_PROXY
+          IntegrationHttpMethod: POST
+          Uri: !Sub "arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyNestAppFunction.Arn}/invocations"
+
+  MyApiGatewayDeployment:
+      Type: AWS::ApiGateway::Deployment
+      Properties:
+        RestApiId: !Ref MyApiGateway
+      DependsOn:
+        - MyApiGatewayMethod
+
+  MyApiGatewayStage:
+      Type: AWS::ApiGateway::Stage
+      Properties:
+        RestApiId: !Ref MyApiGateway
+        StageName: prod
+        DeploymentId: !Ref MyApiGatewayDeployment
+
+  SampleApiPermission:
+      Type: AWS::Lambda::Permission
+      Properties:
+        Action: "lambda:InvokeFunction"
+        FunctionName: !Ref MyNestAppFunction
+        Principal: "apigateway.amazonaws.com"
+        SourceArn: !Sub "arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${MyApiGateway}/*/*"
+        
