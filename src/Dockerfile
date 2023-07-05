@@ -4,7 +4,7 @@ FROM public.ecr.aws/lambda/nodejs:18
 WORKDIR /src
 
 # Copies package.json and package-lock.json to Docker environment
-COPY ./package*.json ./
+COPY ./package*.json ./src/
 
 # Install all node packages
 RUN npm install
