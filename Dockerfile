@@ -1,16 +1,8 @@
-FROM node:lts-alpine
-
-WORKDIR /app
-
-ENV NODE_ENV production
-COPY package.json yarn.lock ./
-
-# install dev dependencies too
-RUN set -x && yarn --prod=false
+# Stage 1: Build the Nest.js application
+FROM public.ecr.aws/lambda/nodejs:18
 
 COPY . .
-RUN set -x && yarn run prestart:prod
 
-EXPOSE 3000
+RUN npm run build
 
-CMD [ "node", "-r", "./tsconfig-paths-bootstrap.js" ,"dist/main.js" ]
+CMD ["dist/lambda.handler"]
