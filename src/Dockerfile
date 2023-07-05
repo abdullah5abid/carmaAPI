@@ -1,16 +1,15 @@
+# Stage 1: Build the Nest.js application
 FROM public.ecr.aws/lambda/nodejs:18
 
+WORKDIR /src
+
+COPY ./src ./
+COPY ../package.json ../yarn.lock ./
+
+RUN npm install
+RUN npm run build
+
 WORKDIR /app
+COPY --from=0 /src/dist .
 
-ENV NODE_ENV production
-COPY package.json yarn.lock ./
-
-# install dev dependencies too
-RUN set -x && yarn --prod=false
-
-COPY . .
-RUN set -x && yarn run prestart:prod
-
-EXPOSE 3000
-
-CMD [ "node", "-r", "./tsconfig-paths-bootstrap.js" ,"dist/main.js" ]
+CMD ["dist/lambda.handler"]
