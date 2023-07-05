@@ -14,9 +14,9 @@ RUN npm install
 # Copies everything over to Docker environment
 COPY ./src .
 
-RUN npm run build
+RUN npm run build --output /app
 
 WORKDIR /app
-COPY --from=0 /src/dist .
+# COPY --from=0 /src/dist .
 
 CMD ["dist/lambda.handler"]
