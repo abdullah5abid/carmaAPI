@@ -3,10 +3,15 @@ FROM public.ecr.aws/lambda/nodejs:18
 
 WORKDIR /src
 
-COPY ./src ./
-COPY package*.json ./
+# Copies package.json and package-lock.json to Docker environment
+COPY ./package*.json ./
 
+# Install all node packages
 RUN npm install
+
+# Copies everything over to Docker environment
+COPY . .
+
 RUN npm run build
 
 WORKDIR /app
