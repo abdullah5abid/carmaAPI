@@ -1761,6 +1761,11 @@
   resolved "https://registry.npmjs.org/@typedorm/document-client/-/document-client-1.15.4.tgz"
   integrity sha512-8wk60QbAzQMPkjxFnWDYpLaJVB1gvQRbO6tDU2AK1eMzFOxe/FFrsUNF9MBxmwv6OlUfQHGup5ymlkcVWicYGQ==
 
+"@types/aws-lambda@^8.10.119":
+  version "8.10.119"
+  resolved "https://registry.npmjs.org/@types/aws-lambda/-/aws-lambda-8.10.119.tgz"
+  integrity sha512-Vqm22aZrCvCd6I5g1SvpW151jfqwTzEZ7XJ3yZ6xaZG31nUEOEyzzVImjRcsN8Wi/QyPxId/x8GTtgIbsy8kEw==
+
 "@types/babel__core@^7.1.14":
   version "7.20.0"
   resolved "https://registry.npmjs.org/@types/babel__core/-/babel__core-7.20.0.tgz"
