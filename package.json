@@ -92,7 +92,6 @@
     "@app": "./dist",
     "@modules": "./dist/modules"
   },
-  ,
   "jest": {
     "moduleFileExtensions": [
       "js",
