@@ -1,12 +1,12 @@
-# Stage 1: Build the Nest.js application
 FROM public.ecr.aws/lambda/nodejs:18
+
+EXPOSE 3000
 
 COPY . .
 
-RUN npm install
-RUN npm run build
+RUN yarn && yarn build
 
-CMD ["dist/lambda.handler"]
+CMD ["yarn", "start:prod"]
 
 # FROM public.ecr.aws/lambda/nodejs:18
 
