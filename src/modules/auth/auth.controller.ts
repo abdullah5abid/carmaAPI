@@ -82,10 +82,10 @@ export class AuthController {
     private readonly userService: UsersService,
     
   ) {
-    this.userPool = new CognitoUserPool({
-      UserPoolId: process.env.USER_POOL_ID,
-      ClientId: process.env.CLIENT_ID,
-    });
+    // this.userPool = new CognitoUserPool({
+    //   UserPoolId: process.env.USER_POOL_ID,
+    //   ClientId: process.env.CLIENT_ID,
+    // });
     this.lambdaClient = new LambdaClient({
       region: 'us-east-2',
     });
