@@ -7,6 +7,9 @@ import { SignupDto } from '@modules/auth/dto/signup.dto';
 
 @Injectable()
 export class UsersService {
+  update(id: number, existingUser: User) {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
