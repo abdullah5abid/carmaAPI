@@ -130,13 +130,16 @@ export class AuthController {
   }
 
   // If the email does not exist, proceed with invoking the Lambda function
-  const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
-
   // Assuming lambdaResponse.email holds the newly created email from Cognito.
+  const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
+  console.log('lambdaResponse', lambdaResponse);
+  if (lambdaResponse.error) {
+    throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
+  }
+
   if (!lambdaResponse.email) {
     throw new BadRequestException('Email creation failed in Cognito.');
   }
-
   // Now, save this new user data in your own database
   const newUser = await this.userService.create({
     ...signupDto,
