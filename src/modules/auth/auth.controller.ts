@@ -79,6 +79,8 @@ export class AuthController {
     logGroupName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
     logStreamName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw', 
     region: 'us-east-2',
+    accessKeyId: 'AKIAVYLZWUX3K5KO43OU',
+    secretAccessKey: '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'
   });
   constructor(
     private readonly authService: AuthService,
