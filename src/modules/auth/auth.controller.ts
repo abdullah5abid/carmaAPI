@@ -84,10 +84,6 @@ export class AuthController {
     private readonly userService: UsersService,
 
   ) {
-    // this.userPool = new CognitoUserPool({
-    //   UserPoolId: process.env.USER_POOL_ID,
-    //   ClientId: process.env.CLIENT_ID,
-    // });
     this.lambdaClient = new LambdaClient({
       region: 'us-east-2',
     });
@@ -111,6 +107,7 @@ export class AuthController {
       // Decode the Uint8Array payload response from Lambda back to string
       const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
       const lambdaResponse = JSON.parse(lambdaResponseString);
+      this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
       return lambdaResponse;
       
     } catch (error) {
@@ -133,12 +130,10 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async signup(@Body() signupDto: SignupDto): Promise<any> {
-    try {
     const existingUser = await this.userService.getByEmail(signupDto.email);
-
     // If user's email exists in the database, throw an error
     if (existingUser) {
-      throw new BadRequestException('Email already exists in the system.');
+      throw new Error(`${signupDto.email} Email already exists in the system.`);
     }
 
     // If the email does not exist, proceed with invoking the Lambda function
@@ -155,12 +150,8 @@ export class AuthController {
       ...signupDto,
       email: lambdaResponse.email // Override with the email received from Lambda, if necessary
     });
-
+    this.logger.log(`New user created: ${JSON.stringify(newUser)}`);
     return await this.authService.createToken(newUser);
-  } catch (error) {
-    this.logger.error(`Error signing up: ${error.message}`, error.stack);
-    throw error;
-  }
 }
 
   @ApiBearerAuth()
