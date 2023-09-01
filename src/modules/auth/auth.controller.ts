@@ -129,7 +129,7 @@ export class AuthController {
     if (lambdaResponse.error) {
       throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     }
-    const existingUser = await this.userService.getByEmail(lambdaResponse.email);
+    const existingUser = await this.userService.findByEmail(lambdaResponse.email);
     if (existingUser) {
       throw new Error(`${lambdaResponse.email} Email already exists in the system.`);
     } else {
