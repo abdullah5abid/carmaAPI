@@ -74,20 +74,18 @@ import { Logger } from 'aws-cloudwatch-log';
 @Controller('api/auth')
 @ApiTags('authentication')
 export class AuthController {
-  private readonly cognitoClient: CognitoIdentityProviderClient;
-  private readonly userPool: CognitoUserPool;
-  private readonly providerClient: CognitoIdentityProviderClient;
   private readonly lambdaClient: LambdaClient;
-  private readonly logger = new Logger({ logGroupName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw' });
+  private readonly logger = new Logger({
+    logGroupName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
+    logStreamName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw', 
+    region: 'us-east-2',
+  });
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
 
   ) {
     this.lambdaClient = new LambdaClient({
-      region: 'us-east-2',
-    });
-    this.providerClient = new CognitoIdentityProviderClient({
       region: 'us-east-2',
     });
   }
