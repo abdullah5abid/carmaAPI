@@ -78,7 +78,7 @@ export class AuthController {
   private readonly userPool: CognitoUserPool;
   private readonly providerClient: CognitoIdentityProviderClient;
   private readonly lambdaClient: LambdaClient;
-  private readonly logger = new Logger();
+  private readonly logger = new Logger(AuthController.name);
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
@@ -122,28 +122,49 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async signup(@Body() signupDto: SignupDto): Promise<any> {
-    const existingUser = await this.userService.getByEmail(signupDto.email);
-    // If user's email exists in the database, throw an error
-    if (existingUser) {
-      throw new Error(`${signupDto.email} Email already exists in the system.`);
+    /*
+    The below code is not working as expected. It is not throwing an error when the email already exists in the system, 
+    and adding duplicate email to the database. 
+    I need you to fix this code to throw an error when the email already exists in the system and not add duplicate email to the database.
+    Check the input (cognito userpool createUser) email that matches the email in the database
+    */
+    if (await this.userService.getByEmail(signupDto.email)) {
+      throw new BadRequestException('User already exists');
     }
-
-    // If the email does not exist, proceed with invoking the Lambda function
-    // Assuming lambdaResponse.email holds the newly created email from Cognito.
     const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
     console.log('lambdaResponse', lambdaResponse);
     this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
     if (lambdaResponse.error) {
       throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     }
-
-    // Now, save this new user data in your own database
     const newUser = await this.userService.create({
       ...signupDto,
-      email: lambdaResponse.email // Override with the email received from Lambda, if necessary
+      email: lambdaResponse.email
     });
     this.logger.log(`New user created: ${JSON.stringify(newUser)}`);
     return await this.authService.createToken(newUser);
+
+    // const existingUser = await this.userService.getByEmail(signupDto.email);
+    // // If user's email exists in the database, throw an error
+    // if (existingUser) {
+    //   throw new Error(`${signupDto.email} Email already exists in the system.`);
+    // }
+    // // If the email does not exist, proceed with invoking the Lambda function
+    // // Assuming lambdaResponse.email holds the newly created email from Cognito.
+    // const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
+    // console.log('lambdaResponse', lambdaResponse);
+    // this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+    // if (lambdaResponse.error) {
+    //   throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
+    // }
+
+    // // Now, save this new user data in your own database
+    // const newUser = await this.userService.create({
+    //   ...signupDto,
+    //   email: lambdaResponse.email // Override with the email received from Lambda, if necessary
+    // });
+    // this.logger.log(`New user created: ${JSON.stringify(newUser)}`);
+    // return await this.authService.createToken(newUser);
 }
 
   @ApiBearerAuth()
