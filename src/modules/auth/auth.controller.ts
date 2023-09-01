@@ -66,8 +66,6 @@ import { SigninDto } from '@modules/auth/dto/signin.dto';
 import { SignupDto } from '@modules/auth/dto/signup.dto';
 import { UsersService } from '@modules/user/user.service';
 import { IRequest } from '@modules/user/user.interface';
-import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
-import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { Logger } from '@aws-lambda-powertools/logger';
 
@@ -131,13 +129,17 @@ export class AuthController {
     if (lambdaResponse.error) {
       throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     }
-    const newUser = await this.userService.create({
-      ...signupDto,
-      email: lambdaResponse.email
-    });
-    this.logger.info(`New user created: ${JSON.stringify(newUser)}`);
-    return await this.authService.createToken(newUser);
-
+    const existingUser = await this.userService.getByEmail(lambdaResponse.email);
+    if (existingUser) {
+      throw new Error(`${lambdaResponse.email} Email already exists in the system.`);
+    } else {
+      const newUser = await this.userService.create({
+        ...signupDto,
+        email: lambdaResponse.email
+      });
+      this.logger.info(`New user created: ${JSON.stringify(newUser)}`);
+      return await this.authService.createToken(newUser);
+    }
     // const existingUser = await this.userService.getByEmail(signupDto.email);
     // // If user's email exists in the database, throw an error
     // if (existingUser) {
