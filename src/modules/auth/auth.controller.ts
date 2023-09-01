@@ -69,7 +69,7 @@ import { IRequest } from '@modules/user/user.interface';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
-import { Logger } from '@nestjs/common';
+import { Logger } from 'aws-cloudwatch-log';
 
 @Controller('api/auth')
 @ApiTags('authentication')
@@ -78,7 +78,7 @@ export class AuthController {
   private readonly userPool: CognitoUserPool;
   private readonly providerClient: CognitoIdentityProviderClient;
   private readonly lambdaClient: LambdaClient;
-  private readonly logger = new Logger(AuthController.name);
+  private readonly logger = new Logger();
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
@@ -93,9 +93,6 @@ export class AuthController {
   }
 
   private async invokeCreateUserLambda(data: any): Promise<any> {
-    try {
-
-
       const payload = new TextEncoder().encode(JSON.stringify(data));
       const command = new InvokeCommand({
         FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
@@ -109,11 +106,6 @@ export class AuthController {
       const lambdaResponse = JSON.parse(lambdaResponseString);
       this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
       return lambdaResponse;
-      
-    } catch (error) {
-      this.logger.error(`Error invoking Lambda: ${error.message}`, error.stack);
-      throw error;
-    }
   }
 
   @Post('signin')
