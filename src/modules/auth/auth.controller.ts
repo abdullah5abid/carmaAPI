@@ -123,6 +123,7 @@ export class AuthController {
     }
     const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
     const parsedBody = typeof lambdaResponse.body === 'string' ? JSON.parse(lambdaResponse.body) : lambdaResponse.body;
+    this.logger.info(`Parsed body: ${JSON.stringify(parsedBody)}`);
     const emailToCheck = parsedBody.email;
 
     // const emailToCheck = lambdaResponse.email;
