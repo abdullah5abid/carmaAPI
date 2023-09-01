@@ -85,21 +85,21 @@ export class AuthController {
   }
 
   private async invokeCreateUserLambda(data: any): Promise<any> {
-      const payload = new TextEncoder().encode(JSON.stringify(data));
-      const command = new InvokeCommand({
-        FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
-        Payload: payload,
-      });
-      const response = await this.lambdaClient.send(command);
-      console.log('response', response);
-      this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
-      this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
-      // Decode the Uint8Array payload response from Lambda back to string
-      const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
-      this.logger.info(`Lambda response string: ${lambdaResponseString}`);
-      const lambdaResponse = JSON.parse(lambdaResponseString);
-      this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
-      return lambdaResponse;
+    const payload = new TextEncoder().encode(JSON.stringify(data));
+    const command = new InvokeCommand({
+      FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
+      Payload: payload,
+    });
+    const response = await this.lambdaClient.send(command);
+    console.log('response', response);
+    this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
+    this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
+    // Decode the Uint8Array payload response from Lambda back to string
+    const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
+    this.logger.info(`Lambda response string: ${lambdaResponseString}`);
+    const lambdaResponse = JSON.parse(lambdaResponseString);
+    this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+    return lambdaResponse;
   }
 
   @Post('signin')
@@ -116,15 +116,21 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async signup(@Body() signupDto: SignupDto): Promise<any> {
-   const user = await this.userService.getByEmail(signupDto.email);
-   this.logger.info(`User email: ${JSON.stringify(user)}`);
+    const user = await this.userService.getByEmail(signupDto.email);
+    this.logger.info(`User email: ${JSON.stringify(user)}`);
     if (user) {
       throw new BadRequestException('User already exists');
     }
     const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
-    const emailToCheck = lambdaResponse.email;
+    const parsedBody = typeof lambdaResponse.body === 'string' ? JSON.parse(lambdaResponse.body) : lambdaResponse.body;
+    const emailToCheck = parsedBody.email;
+
+    // const emailToCheck = lambdaResponse.email;
+    if (!emailToCheck) {
+      throw new Error('Email not returned from Lambda or is undefined.');
+    }   
     this.logger.info(`Email to check: ${emailToCheck}`);
-    
+
     console.log('lambdaResponse', lambdaResponse);
     this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
     if (lambdaResponse.error) {
@@ -162,7 +168,7 @@ export class AuthController {
     // });
     // this.logger.log(`New user created: ${JSON.stringify(newUser)}`);
     // return await this.authService.createToken(newUser);
-}
+  }
 
   @ApiBearerAuth()
   @UseGuards(AuthGuard())
