@@ -78,7 +78,7 @@ export class AuthController {
   private readonly userPool: CognitoUserPool;
   private readonly providerClient: CognitoIdentityProviderClient;
   private readonly lambdaClient: LambdaClient;
-  private readonly logger = new Logger(AuthController.name);
+  private readonly logger = new Logger({ logGroupName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw' });
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
@@ -157,7 +157,6 @@ export class AuthController {
     // if (lambdaResponse.error) {
     //   throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     // }
-
     // // Now, save this new user data in your own database
     // const newUser = await this.userService.create({
     //   ...signupDto,
