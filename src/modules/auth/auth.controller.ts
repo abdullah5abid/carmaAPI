@@ -94,11 +94,11 @@ export class AuthController {
       });
       const response = await this.lambdaClient.send(command);
       console.log('response', response);
-      this.logger.log(`Lambda response: ${JSON.stringify(response)}`);
+      this.logger.info(`Lambda response: ${JSON.stringify(response)}`);
       // Decode the Uint8Array payload response from Lambda back to string
       const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
       const lambdaResponse = JSON.parse(lambdaResponseString);
-      this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+      this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
       return lambdaResponse;
   }
 
@@ -127,7 +127,7 @@ export class AuthController {
     }
     const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
     console.log('lambdaResponse', lambdaResponse);
-    this.logger.log(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+    this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
     if (lambdaResponse.error) {
       throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     }
@@ -135,7 +135,7 @@ export class AuthController {
       ...signupDto,
       email: lambdaResponse.email
     });
-    this.logger.log(`New user created: ${JSON.stringify(newUser)}`);
+    this.logger.info(`New user created: ${JSON.stringify(newUser)}`);
     return await this.authService.createToken(newUser);
 
     // const existingUser = await this.userService.getByEmail(signupDto.email);
