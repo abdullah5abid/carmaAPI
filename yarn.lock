@@ -117,6 +117,19 @@
     "@aws-sdk/util-utf8-browser" "^3.0.0"
     tslib "^1.11.1"
 
+"@aws-lambda-powertools/commons@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.npmjs.org/@aws-lambda-powertools/commons/-/commons-1.12.1.tgz"
+  integrity sha512-VChNfDUxxcB5KTfQPkJgxYihEZkrmeOzU9/A9FRBc+3v33EEM59T2pIgBkFy0VoINvGi3MoBEln/wyu2jV0ivA==
+
+"@aws-lambda-powertools/logger@^1.12.1":
+  version "1.12.1"
+  resolved "https://registry.npmjs.org/@aws-lambda-powertools/logger/-/logger-1.12.1.tgz"
+  integrity sha512-QMBkd6/rN2MniiNcWeCigT4AKqH+NG1X6xN8S+YLszd4qJvXvRqx2EBO01WVrtyctOE8IpLqxicevmw1cJqDIA==
+  dependencies:
+    "@aws-lambda-powertools/commons" "^1.12.1"
+    lodash.merge "^4.6.2"
+
 "@aws-sdk/abort-controller@3.357.0":
   version "3.357.0"
   resolved "https://registry.npmjs.org/@aws-sdk/abort-controller/-/abort-controller-3.357.0.tgz"

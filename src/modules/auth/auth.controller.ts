@@ -69,19 +69,13 @@ import { IRequest } from '@modules/user/user.interface';
 import { CognitoUser, CognitoUserPool } from 'amazon-cognito-identity-js';
 import { CognitoIdentityProviderClient } from '@aws-sdk/client-cognito-identity-provider';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
-import { Logger } from 'aws-cloudwatch-log';
+import { Logger } from '@aws-lambda-powertools/logger';
 
 @Controller('api/auth')
 @ApiTags('authentication')
 export class AuthController {
   private readonly lambdaClient: LambdaClient;
-  private readonly logger = new Logger({
-    logGroupName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
-    logStreamName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw', 
-    region: 'us-east-2',
-    accessKeyId: 'AKIAVYLZWUX3K5KO43OU',
-    secretAccessKey: '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'
-  });
+  private readonly logger = new Logger();
   constructor(
     private readonly authService: AuthService,
     private readonly userService: UsersService,
