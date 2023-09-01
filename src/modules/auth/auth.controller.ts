@@ -92,9 +92,11 @@ export class AuthController {
       });
       const response = await this.lambdaClient.send(command);
       console.log('response', response);
-      this.logger.info(`Lambda response: ${JSON.stringify(response)}`);
+      this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
+      this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
       // Decode the Uint8Array payload response from Lambda back to string
       const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
+      this.logger.info(`Lambda response string: ${lambdaResponseString}`);
       const lambdaResponse = JSON.parse(lambdaResponseString);
       this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
       return lambdaResponse;
@@ -114,22 +116,22 @@ export class AuthController {
   @ApiResponse({ status: 400, description: 'Bad Request' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   async signup(@Body() signupDto: SignupDto): Promise<any> {
-    /*
-    The below code is not working as expected. It is not throwing an error when the email already exists in the system, 
-    and adding duplicate email to the database. 
-    I need you to fix this code to throw an error when the email already exists in the system and not add duplicate email to the database.
-    Check the input (cognito userpool createUser) email that matches the email in the database
-    */
-    if (await this.userService.getByEmail(signupDto.email)) {
+   const user = await this.userService.getByEmail(signupDto.email);
+   this.logger.info(`User email: ${JSON.stringify(user)}`);
+    if (user) {
       throw new BadRequestException('User already exists');
     }
     const lambdaResponse = await this.invokeCreateUserLambda(signupDto);
+    const emailToCheck = lambdaResponse.email;
+    this.logger.info(`Email to check: ${emailToCheck}`);
+    
     console.log('lambdaResponse', lambdaResponse);
     this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
     if (lambdaResponse.error) {
       throw new Error(lambdaResponse.errorMessage || 'Error creating user in Cognito.');
     }
-    const existingUser = await this.userService.findByEmail(lambdaResponse.email);
+    const existingUser = await this.userService.findByEmail(emailToCheck);
+    this.logger.info(`Existing user: ${JSON.stringify(existingUser)}`);
     if (existingUser) {
       throw new Error(`${lambdaResponse.email} Email already exists in the system.`);
     } else {
