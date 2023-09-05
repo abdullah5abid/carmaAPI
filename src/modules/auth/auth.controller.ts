@@ -55,22 +55,22 @@ export class AuthController {
       throw new Error('Failed to invoke CreateUserLambda');
     }
 
-    const payload = new TextEncoder().encode(JSON.stringify(data));
-    const command = new InvokeCommand({
-      FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
-      Payload: payload,
-    });
-    const response = await this.lambdaClient.send(command);
-    console.log('response', response);
-    this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
-    this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
-    // Decode the Uint8Array payload response from Lambda back to string
-    const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
-    this.logger.info(`Lambda response string: ${lambdaResponseString}`);
-    const lambdaResponse = JSON.parse(lambdaResponseString);
-    lambdaResponse.email = urlResponse.data.email;
-    this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
-    return lambdaResponse;
+    // const payload = new TextEncoder().encode(JSON.stringify(data));
+    // const command = new InvokeCommand({
+    //   FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
+    //   Payload: payload,
+    // });
+    // const response = await this.lambdaClient.send(command);
+    // console.log('response', response);
+    // this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
+    // this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
+    // // Decode the Uint8Array payload response from Lambda back to string
+    // const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
+    // this.logger.info(`Lambda response string: ${lambdaResponseString}`);
+    // const lambdaResponse = JSON.parse(lambdaResponseString);
+    // lambdaResponse.email = urlResponse.data.email;
+    // this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+    // return lambdaResponse;
   }
 
   @Post('signin')
