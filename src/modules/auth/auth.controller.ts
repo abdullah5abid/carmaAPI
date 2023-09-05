@@ -34,14 +34,10 @@ export class AuthController {
   }
 
   private async invokeCreateUserLambda(data: SignupDto): Promise<any> {
-    const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser`;
+    const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser?email=${data.email}`;
     this.logger.info(`Constructed url: ${url}`);
     // try {
-    const urlResponse = await axios.post(url, {
-      params: {
-        email: data.email,
-      }
-    });
+    const urlResponse = await axios.post(url);
     this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
     this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
     this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
