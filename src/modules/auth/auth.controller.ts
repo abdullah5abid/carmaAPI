@@ -34,7 +34,7 @@ export class AuthController {
   }
 
   private async invokeCreateUserLambda(data: SignupDto): Promise<any> {
-    const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/?email=${data.email}`;
+    const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser?email=${data.email}`;
     const urlResponse = await axios.post(url, null, {
       params: {
         email: data.email,
