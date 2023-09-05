@@ -41,7 +41,10 @@ export class AuthController {
     this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
     this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
     this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
-    // const responseLambda = urlResponse.data;
+    const responseLambda = urlResponse.data;
+    responseLambda.email = urlResponse.data.email;
+    this.logger.info(`responseLambda API: ${JSON.stringify(responseLambda)}`);
+    return responseLambda;
     // return responseLambda;
     // } catch (error) {
     //   this.logger.error(`Error invoking CreateUserLambda via API Gateway: ${error.message}`);
