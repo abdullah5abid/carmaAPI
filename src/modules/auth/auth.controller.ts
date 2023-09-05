@@ -37,7 +37,7 @@ export class AuthController {
     const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser?email=${data.email}`;
     this.logger.info(`Constructed url: ${url}`);
     // try {
-    const urlResponse = await axios.post(url, null, {
+    const urlResponse = await axios.post(url, {
       params: {
         email: data.email,
       }
@@ -45,8 +45,8 @@ export class AuthController {
     this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
     this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
     this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
-    const responseLambda = urlResponse.data;
-    return responseLambda;
+    // const responseLambda = urlResponse.data;
+    // return responseLambda;
     // } catch (error) {
     //   this.logger.error(`Error invoking CreateUserLambda via API Gateway: ${error.message}`);
     //   if (error.response) {
@@ -55,22 +55,22 @@ export class AuthController {
     //   throw new Error('Failed to invoke CreateUserLambda');
     // }
 
-    // const payload = new TextEncoder().encode(JSON.stringify(data));
-    // const command = new InvokeCommand({
-    //   FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
-    //   Payload: payload,
-    // });
-    // const response = await this.lambdaClient.send(command);
-    // console.log('response', response);
-    // this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
-    // this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
-    // // Decode the Uint8Array payload response from Lambda back to string
-    // const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
-    // this.logger.info(`Lambda response string: ${lambdaResponseString}`);
-    // const lambdaResponse = JSON.parse(lambdaResponseString);
-    // lambdaResponse.email = urlResponse.data.email;
-    // this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
-    // return lambdaResponse;
+    const payload = new TextEncoder().encode(JSON.stringify(data));
+    const command = new InvokeCommand({
+      FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
+      Payload: payload,
+    });
+    const response = await this.lambdaClient.send(command);
+    console.log('response', response);
+    this.logger.info(`response for lambda client: ${JSON.stringify(response)}`);
+    this.logger.info(`Raw Lambda response payload: ${response.Payload}`);
+    // Decode the Uint8Array payload response from Lambda back to string
+    const lambdaResponseString = new TextDecoder().decode(response.Payload as Uint8Array);
+    this.logger.info(`Lambda response string: ${lambdaResponseString}`);
+    const lambdaResponse = JSON.parse(lambdaResponseString);
+    lambdaResponse.email = urlResponse.data.email;
+    this.logger.info(`Lambda response: ${JSON.stringify(lambdaResponse)}`);
+    return lambdaResponse;
   }
 
   @Post('signin')
