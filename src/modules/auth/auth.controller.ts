@@ -36,24 +36,24 @@ export class AuthController {
   private async invokeCreateUserLambda(data: SignupDto): Promise<any> {
     const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser?email=${data.email}`;
     this.logger.info(`Constructed url: ${url}`);
-    try {
-      const urlResponse = await axios.post(url, null, {
-        params: {
-          email: data.email,
-        }
-      });
-      this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
-      this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
-      this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
-      const responseLambda = urlResponse.data;
-      return responseLambda;
-    } catch (error) {
-      this.logger.error(`Error invoking CreateUserLambda via API Gateway: ${error.message}`);
-      if (error.response) {
-        this.logger.error(`Error details: ${JSON.stringify(error.response.data)}`);
+    // try {
+    const urlResponse = await axios.post(url, null, {
+      params: {
+        email: data.email,
       }
-      throw new Error('Failed to invoke CreateUserLambda');
-    }
+    });
+    this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
+    this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
+    this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
+    const responseLambda = urlResponse.data;
+    return responseLambda;
+    // } catch (error) {
+    //   this.logger.error(`Error invoking CreateUserLambda via API Gateway: ${error.message}`);
+    //   if (error.response) {
+    //     this.logger.error(`Error details: ${JSON.stringify(error.response.data)}`);
+    //   }
+    //   throw new Error('Failed to invoke CreateUserLambda');
+    // }
 
     // const payload = new TextEncoder().encode(JSON.stringify(data));
     // const command = new InvokeCommand({
