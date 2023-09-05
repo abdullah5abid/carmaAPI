@@ -40,6 +40,11 @@ export class AuthController {
         email: data.email,
       }
     });
+    this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
+    this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
+    this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
+    const responseLambda = urlResponse.data;
+    return responseLambda;
     const payload = new TextEncoder().encode(JSON.stringify(data));
     const command = new InvokeCommand({
       FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
