@@ -16,7 +16,7 @@ import { UsersService } from '@modules/user/user.service';
 import { IRequest } from '@modules/user/user.interface';
 import { LambdaClient, InvokeCommand } from '@aws-sdk/client-lambda';
 import { Logger } from '@aws-lambda-powertools/logger';
-import  axios  from 'axios';
+import axios from 'axios';
 
 @Controller('api/auth')
 @ApiTags('authentication')
@@ -35,16 +35,26 @@ export class AuthController {
 
   private async invokeCreateUserLambda(data: SignupDto): Promise<any> {
     const url = `https://0ycdi3goi5.execute-api.us-east-2.amazonaws.com/prod/createUser?email=${data.email}`;
-    const urlResponse = await axios.post(url, null, {
-      params: {
-        email: data.email,
+    this.logger.info(`Constructed url: ${url}`);
+    try {
+      const urlResponse = await axios.post(url, null, {
+        params: {
+          email: data.email,
+        }
+      });
+      this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
+      this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
+      this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
+      const responseLambda = urlResponse.data;
+      return responseLambda;
+    } catch (error) {
+      this.logger.error(`Error invoking CreateUserLambda via API Gateway: ${error.message}`);
+      if (error.response) {
+        this.logger.error(`Error details: ${JSON.stringify(error.response.data)}`);
       }
-    });
-    this.logger.info(`urlResponse: ${JSON.stringify(urlResponse)}`);
-    this.logger.info(`urlResponse.data: ${JSON.stringify(urlResponse.data)}`);
-    this.logger.info(`urlResponse.data.email: ${JSON.stringify(urlResponse.data.email)}`);
-    const responseLambda = urlResponse.data;
-    return responseLambda;
+      throw new Error('Failed to invoke CreateUserLambda');
+    }
+
     const payload = new TextEncoder().encode(JSON.stringify(data));
     const command = new InvokeCommand({
       FunctionName: 'UserManagementStack-CreateUserLambda0154A2EB-5ufMqT4E5ntw',
@@ -90,7 +100,7 @@ export class AuthController {
     // const emailToCheck = lambdaResponse.email;
     if (!emailToCheck) {
       throw new Error('Email not returned from Lambda or is undefined.');
-    }   
+    }
     this.logger.info(`Email to check: ${emailToCheck}`);
 
     console.log('lambdaResponse', lambdaResponse);
